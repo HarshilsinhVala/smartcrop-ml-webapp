@@ -3,16 +3,17 @@
   align-items: center;
   padding: 10px 20px;
   background-color: var(--navbar-bg);
-  color: var(--text-color);
+  color: var(--navbar-text);
   height: 60px;
   position: fixed;
   width: 100%;
   top: 0;
   left: 0;
   z-index: 1000;
-  box-shadow: 0 2px 5px var(--shadow-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
   transition: background-color 0.3s ease, color 0.3s ease;
   gap: 20px;
+  border-bottom: 1px solid var(--card-border);
 }
 
 .logo {
