@@ -38,7 +38,7 @@
 
 .theme-btn {
   background-color: transparent;
-  border: 2px solid var(--text-color);
+  border: 2px solid var(--navbar-text);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -48,7 +48,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-color);
+  color: var(--navbar-text);
   position: relative;
   overflow: hidden;
   box-shadow: 0 0 0 0 var(--primary-color);
@@ -88,7 +88,7 @@
 
 .nav-links a {
   text-decoration: none;
-  color: var(--text-color);
+  color: var(--navbar-text);
   font-weight: bold;
   transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
   font-size: 14px;
@@ -245,7 +245,7 @@
 .hamburger-menu div {
   width: 25px;
   height: 3px;
-  background-color: var(--text-color);
+  background-color: var(--navbar-text);
   transition: transform 0.3s ease;
 }
 
