@@ -1,0 +1,28 @@
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  min-height: 80vh;
+  width: 100%;
+  background-color: var(--bg-color);
+  transition: background-color 0.3s ease;
+}
+
+.hero-img {
+  margin-top: 150px;
+  height: 200px;
+  margin-bottom: 20px;
+  border-radius: 30%;
+}
+
+.hero-title {
+  font-size: 2rem;
+  color: var(--text-color);
+  transition: color 0.3s ease;
+}
+
+.hero-title span {
+  color: var(--primary-color);
+}
