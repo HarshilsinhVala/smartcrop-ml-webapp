@@ -23,7 +23,7 @@ const upload = multer({ storage });
 app.post("/upload", upload.single("image"), async (req, res) => {
   try {
     const imagePath = req.file.path;
-    const ML_URL = process.env.ML_API_URL || "http://127.0.0.1:5000";
+    const ML_URL = process.env.ML_API_URL || "http://127.0.0.1:5001";
     const response = await axios.post(`${ML_URL}/predict`, { imagePath });
     res.json(response.data);
   } catch (error) {
