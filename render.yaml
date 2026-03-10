@@ -1,0 +1,43 @@
+services:
+  # React Frontend Service
+  - type: web
+    name: smartcrop-frontend
+    env: node
+    plan: free
+    buildCommand: cd Frontend && npm install && npm run build
+    startCommand: cd Frontend && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: REACT_APP_API_URL
+        value: https://smartcrop-backend.onrender.com
+      - key: PORT
+        value: 3000
+
+  # Node.js Backend Service
+  - type: web
+    name: smartcrop-backend
+    env: node
+    plan: free
+    buildCommand: cd Backend && npm install
+    startCommand: cd Backend && node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3001
+      - key: MONGODB_URI
+        value: your_mongodb_connection_string_here
+
+  # Python ML Service
+  - type: web
+    name: smartcrop-ml
+    env: python-3
+    plan: free
+    buildCommand: cd Frontend && pip install -r requirements.txt
+    startCommand: cd Frontend && python app.py
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 5000
