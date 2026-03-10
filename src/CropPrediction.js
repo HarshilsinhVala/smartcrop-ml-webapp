@@ -40,7 +40,7 @@ const CropPrediction = () => {
 
       console.log("📤 Sending data:", formattedData);
 
-      const response = await axios.post("http://127.0.0.1:5000/predict_crop", formattedData, {
+      const response = await axios.post("http://127.0.0.1:5001/predict_crop", formattedData, {
         headers: { "Content-Type": "application/json" },
       });
 
