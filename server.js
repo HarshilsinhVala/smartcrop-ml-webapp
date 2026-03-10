@@ -23,7 +23,8 @@ const upload = multer({ storage });
 app.post("/upload", upload.single("image"), async (req, res) => {
   try {
     const imagePath = req.file.path;
-    const response = await axios.post("http://127.0.0.1:5000/predict", { imagePath });
+    const ML_URL = process.env.ML_API_URL || "http://127.0.0.1:5000";
+    const response = await axios.post(`${ML_URL}/predict`, { imagePath });
     res.json(response.data);
   } catch (error) {
     console.error("Image processing error:", error);
