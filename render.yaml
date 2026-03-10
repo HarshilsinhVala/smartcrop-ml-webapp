@@ -32,7 +32,7 @@ services:
   # Python ML Service
   - type: web
     name: smartcrop-ml
-    env: python-3
+    env: python
     plan: free
     buildCommand: cd Frontend && pip install -r requirements.txt
     startCommand: cd Frontend && python app.py
