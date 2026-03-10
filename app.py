@@ -18,7 +18,7 @@ except ImportError:
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "*"}})  # Allow all routes for frontend access
+CORS(app, resources={r"/*": {"origins": "*"}}, supports_credentials=True)  # Allow all routes for frontend access
 
 # Set up logging
 logging.basicConfig(level=logging.INFO)
