@@ -21,6 +21,10 @@
     "react-scripts": "^5.0.1",
     "router-dom": "^3.0.3"
   },
+
+"engines": {
+  "node": "24.13.0"
+}
   "scripts": {
     "start": "react-scripts start",
     "dev": "react-scripts start",
