@@ -2,7 +2,11 @@
   "name": "miniproject",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": "24.13.0"
+  },
   "dependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "axios": "^1.7.9",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.20.3",
@@ -21,10 +25,6 @@
     "react-scripts": "^5.0.1",
     "router-dom": "^3.0.3"
   },
-
-"engines": {
-  "node": "24.13.0"
-},
   "scripts": {
     "start": "react-scripts start",
     "dev": "react-scripts start",
@@ -52,13 +52,12 @@
       "last 1 safari version"
     ]
   },
-  "description": "This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).",
+  "description": "This project was bootstrapped with Create React App.",
   "main": "index.js",
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "cross-env": "^10.1.0"
   }
 }
