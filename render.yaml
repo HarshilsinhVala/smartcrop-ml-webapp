@@ -34,8 +34,8 @@ services:
     name: smartcrop-ml
     env: python
     plan: free
-    buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app --bind 0.0.0.0:$PORT
+    buildCommand: cd Frontend && pip install -r requirements.txt
+    startCommand: cd Frontend && gunicorn app:app --bind 0.0.0.0:$PORT
     envVars:
       - key: FLASK_ENV
         value: production
