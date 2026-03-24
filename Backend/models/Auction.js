@@ -1,11 +1,14 @@
 const mongoose = require("mongoose");
 
-const AuctionSchema = new mongoose.Schema({
-  name: String,
-  description: String,
-  quantity: Number,
-  price: Number,
-  date: { type: Date, default: Date.now },
-});
+const auctionSchema = new mongoose.Schema(
+  {
+    name:        { type: String, required: true, trim: true },
+    description: { type: String, required: true, trim: true },
+    quantity:    { type: Number, default: null },
+    price:       { type: Number, default: null },
+    createdBy:   { type: String, default: "admin" },
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Auction", AuctionSchema);
+module.exports = mongoose.model("Auction", auctionSchema);

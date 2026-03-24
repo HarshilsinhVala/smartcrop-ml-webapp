@@ -129,6 +129,7 @@
   align-items: center;
   flex: 0 0 auto;
   padding-right: 15px;
+  background: transparent;
 }
 
 .user-info {
@@ -138,6 +139,9 @@
   font-size: 14px;
   color: var(--navbar-text);
   white-space: nowrap;
+  background: transparent;
+  border: none;
+  outline: none;
 }
 
 .user-info span {
@@ -246,6 +250,8 @@
   transition: background-color 0.3s ease, transform 0.2s ease;
   position: relative;
   z-index: 10;
+  overflow: hidden;
+  background-clip: padding-box;
 }
 
 .logout-btn:hover {

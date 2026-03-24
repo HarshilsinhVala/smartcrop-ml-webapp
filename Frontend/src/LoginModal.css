@@ -219,3 +219,83 @@
 .close-btn:active {
   transform: scale(0.95);
 }
+
+/* Add these to your existing LoginModal.css */
+
+/* Tab switcher */
+.login-tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--secondary-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 4px;
+  margin-bottom: 20px;
+}
+
+.login-tab {
+  flex: 1;
+  padding: 9px;
+  border: none;
+  border-radius: 9px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
+  background: transparent;
+  color: var(--text-color);
+  opacity: 0.55;
+}
+
+.login-tab.active {
+  background: var(--primary-color);
+  color: #fff !important;
+  opacity: 1;
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.25);
+}
+
+.login-tab:hover:not(.active) {
+  opacity: 0.85;
+  background: var(--card-bg);
+}
+
+/* Admin hint text */
+.admin-login-hint {
+  font-size: 12px;
+  opacity: 0.6;
+  margin: -10px 0 16px;
+  line-height: 1.5;
+}
+
+/* Admin submit button — slightly different color */
+.admin-submit-btn {
+  background: #2d3748 !important;
+}
+.admin-submit-btn:hover {
+  background: #1a202c !important;
+}
+[data-theme="dark"] .admin-submit-btn {
+  background: var(--primary-color) !important;
+}
+
+/* Navbar admin chip */
+.admin-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 3px 9px;
+  background: rgba(0, 123, 255, 0.12);
+  color: var(--primary-color);
+  border: 1px solid rgba(0, 123, 255, 0.25);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
+
+/* Admin nav link */
+.admin-nav-link {
+  color: var(--primary-color) !important;
+  font-weight: 700 !important;
+}
