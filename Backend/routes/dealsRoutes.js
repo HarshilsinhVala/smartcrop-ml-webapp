@@ -1,10 +1,11 @@
 const express = require("express");
 const Deal = require("../models/Deal");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
 
 // Create a new deal
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
   try {
     const { auctionId, name, quantity, price } = req.body;
     const newDeal = new Deal({ auctionId, name, quantity, price });
@@ -16,7 +17,7 @@ router.post("/", async (req, res) => {
 });
 
 // Get all deals
-router.get("/", async (req, res) => {
+router.get("/", authMiddleware, async (req, res) => {
   try {
     const deals = await Deal.find().populate("auctionId");
     res.json(deals);

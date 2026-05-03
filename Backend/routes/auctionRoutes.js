@@ -1,7 +1,15 @@
 const express = require("express");
 const Auction = require("../models/Auction");
+const authMiddleware = require("../middleware/authMiddleware");
 
 const router = express.Router();
+
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+  next();
+}
 
 // Get all auctions
 router.get("/", async (req, res) => {
@@ -14,7 +22,7 @@ router.get("/", async (req, res) => {
 });
 
 // Add a new auction
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, requireAdmin, async (req, res) => {
   try {
     const { name, description, quantity, price } = req.body;
     const newAuction = new Auction({ name, description, quantity, price });
@@ -26,7 +34,7 @@ router.post("/", async (req, res) => {
 });
 
 // ✅ Update auction (quantity & price) when making a deal
-router.put("/:id", async (req, res) => {
+router.put("/:id", authMiddleware, requireAdmin, async (req, res) => {
   try {
     const { quantity, price } = req.body;
     const updatedAuction = await Auction.findByIdAndUpdate(

@@ -7,22 +7,22 @@ require("dotenv").config();
 
 const router = express.Router();
 
+function requireEnv(name) {
+  const v = process.env[name];
+  return typeof v === "string" && v.trim().length > 0 ? v : null;
+}
+
 // Register User
 router.post("/register", async (req, res) => {
   try {
-    console.log("➡ Register API called");
-    console.log("📩 Received Data:", req.body);
-
     const { username, email, password } = req.body;
 
     if (!username || !email || !password) {
-      console.log("❌ Missing fields:", { username, email, password });
       return res.status(400).json({ error: "All fields are required" });
     }
 
     const userExists = await User.findOne({ $or: [{ username }, { email }] });
     if (userExists) {
-      console.log("❌ User already exists:", userExists);
       return res.status(400).json({ error: "Username or email already exists" });
     }
 
@@ -30,7 +30,6 @@ router.post("/register", async (req, res) => {
     const newUser = new User({ username, email, password });
     await newUser.save();
 
-    console.log("✅ User registered successfully:", newUser);
     res.status(201).json({ message: "✅ User registered successfully" });
   } catch (error) {
     console.error("❌ Registration Error:", error);
@@ -45,39 +44,32 @@ router.post("/register", async (req, res) => {
 // Login User
 router.post("/login", async (req, res) => {
   try {
-    console.log("➡ Login API called");
-    console.log("📩 Received Data:", req.body);
-
     const { username, password } = req.body;
 
     if (!username || !password) {
-      console.log("❌ Missing fields:", { username, password });
       return res.status(400).json({ error: "All fields are required" });
     }
 
     // Fetch user from DB
     const user = await User.findOne({ username });
     if (!user) {
-      console.log("❌ User not found:", username);
       return res.status(400).json({ error: "Invalid username or password" });
     }
 
-    // Debugging: Print stored and entered passwords
-    console.log("🔍 Stored Hashed Password:", user.password);
-    console.log("🔍 Entered Password:", password);
-
     // Check password
     const isMatch = await bcrypt.compare(password, user.password);
-    console.log("🔍 Password Match Result:", isMatch);
 
     if (!isMatch) {
-      console.log("❌ Incorrect password for:", username);
       return res.status(400).json({ error: "Invalid username or password" });
     }
 
     // Generate JWT token
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
-    console.log("✅ Login successful for:", username);
+    const jwtSecret = requireEnv("JWT_SECRET");
+    if (!jwtSecret) {
+      return res.status(500).json({ error: "Server misconfigured: JWT_SECRET missing" });
+    }
+
+    const token = jwt.sign({ id: user._id, role: user.role || "user" }, jwtSecret, { expiresIn: "1h" });
     res.json({ message: "✅ Login successful", token });
   } catch (error) {
     console.error("❌ Login Error:", error);
@@ -85,8 +77,15 @@ router.post("/login", async (req, res) => {
   }
 });
 
-// DEBUG: List all users (no password) - remove in production
-router.get('/users', async (req, res) => {
+function requireAdmin(req, res, next) {
+  if (!req.user || req.user.role !== "admin") {
+    return res.status(403).json({ error: "Admin access required" });
+  }
+  next();
+}
+
+// List users (admin only)
+router.get("/users", authMiddleware, requireAdmin, async (req, res) => {
   try {
     const users = await User.find({}, { password: 0 });
     res.json({ users });

@@ -3,3 +3,11 @@ Validation
 Train
 SmartCrop-Dataset
 web-vitals
+
+# env / secrets
+.env
+.env.*
+
+# uploads / generated
+uploads/
+Frontend/uploads/

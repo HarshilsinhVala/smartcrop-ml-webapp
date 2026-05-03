@@ -1,6 +1,5 @@
 const express  = require("express");
 const jwt      = require("jsonwebtoken");
-const bcrypt   = require("bcryptjs");
 const router   = express.Router();
 
 // Import your existing User model — adjust path if different
@@ -8,11 +7,10 @@ const User    = require("../models/User");
 // Import or create a simple Auction model
 const Auction = require("../models/Auction");
 
-// ── Admin credentials from .env ──
-// Add these to your .env file:
-//   ADMIN_USERNAME=admin
-//   ADMIN_PASSWORD=admin@kisaan123
-//   JWT_SECRET=your_jwt_secret
+function requireEnv(name) {
+  const v = process.env[name];
+  return typeof v === "string" && v.trim().length > 0 ? v : null;
+}
 
 // ── Middleware: verify JWT and check admin role ──
 function verifyAdmin(req, res, next) {
@@ -21,7 +19,12 @@ function verifyAdmin(req, res, next) {
     return res.status(401).json({ error: "No token provided" });
   }
   try {
-    const decoded = jwt.verify(auth.split(" ")[1], process.env.JWT_SECRET);
+    const jwtSecret = requireEnv("JWT_SECRET");
+    if (!jwtSecret) {
+      return res.status(500).json({ error: "Server misconfigured: JWT_SECRET missing" });
+    }
+
+    const decoded = jwt.verify(auth.split(" ")[1], jwtSecret);
     if (decoded.role !== "admin") {
       return res.status(403).json({ error: "Admin access required" });
     }
@@ -38,8 +41,13 @@ function verifyAdmin(req, res, next) {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
-  const adminUsername = process.env.ADMIN_USERNAME || "admin";
-  const adminPassword = process.env.ADMIN_PASSWORD || "admin@kisaan123";
+  const adminUsername = requireEnv("ADMIN_USERNAME");
+  const adminPassword = requireEnv("ADMIN_PASSWORD");
+  const jwtSecret     = requireEnv("JWT_SECRET");
+
+  if (!adminUsername || !adminPassword || !jwtSecret) {
+    return res.status(500).json({ error: "Server misconfigured: missing admin env vars" });
+  }
 
   if (username !== adminUsername || password !== adminPassword) {
     return res.status(401).json({ error: "Invalid admin credentials" });
@@ -47,7 +55,7 @@ router.post("/login", async (req, res) => {
 
   const token = jwt.sign(
     { username, role: "admin" },
-    process.env.JWT_SECRET,
+    jwtSecret,
     { expiresIn: "8h" }
   );
 
