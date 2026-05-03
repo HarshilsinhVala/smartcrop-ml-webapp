@@ -242,6 +242,16 @@ def predict_disease():
             class_index = torch.argmax(probs).item()
             confidence  = round(probs[class_index].item(), 4)
 
+        try:
+            os.remove(image_path)
+        except Exception:
+            pass
+
+        # ─── Out-of-Distribution (Invalid Image) Check ───
+        # If confidence is too low, the image is likely not a crop leaf
+        if confidence < 0.65:
+            return jsonify({"error": "Invalid Image! The uploaded image does not appear to be a recognizable crop leaf. Please upload a clear image of a plant leaf."}), 400
+
         disease_name = (
             CLASS_NAMES[class_index]
             if class_index < len(CLASS_NAMES)
@@ -250,11 +260,6 @@ def predict_disease():
 
         # Clean display name: "Tomato___Late_blight" → "Tomato — Late Blight"
         display_name = disease_name.replace("___", " — ").replace("_", " ").title()
-
-        try:
-            os.remove(image_path)
-        except Exception:
-            pass
 
         return jsonify({
             "predicted_class": class_index,

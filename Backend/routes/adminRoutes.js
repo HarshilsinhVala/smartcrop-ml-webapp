@@ -2,9 +2,7 @@ const express  = require("express");
 const jwt      = require("jsonwebtoken");
 const router   = express.Router();
 
-// Import your existing User model — adjust path if different
 const User    = require("../models/User");
-// Import or create a simple Auction model
 const Auction = require("../models/Auction");
 
 function requireEnv(name) {
@@ -12,7 +10,7 @@ function requireEnv(name) {
   return typeof v === "string" && v.trim().length > 0 ? v : null;
 }
 
-// ── Middleware: verify JWT and check admin role ──
+// ── Middleware: verify JWT and check admin role ──────────────
 function verifyAdmin(req, res, next) {
   const auth = req.headers.authorization;
   if (!auth || !auth.startsWith("Bearer ")) {
@@ -23,7 +21,6 @@ function verifyAdmin(req, res, next) {
     if (!jwtSecret) {
       return res.status(500).json({ error: "Server misconfigured: JWT_SECRET missing" });
     }
-
     const decoded = jwt.verify(auth.split(" ")[1], jwtSecret);
     if (decoded.role !== "admin") {
       return res.status(403).json({ error: "Admin access required" });
@@ -35,9 +32,9 @@ function verifyAdmin(req, res, next) {
   }
 }
 
-// ════════════════════════════════════════
-// POST /admin/login  — Admin login
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// POST /admin/login
+// ════════════════════════════════════════════════════════════
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
 
@@ -65,9 +62,34 @@ router.post("/login", async (req, res) => {
   });
 });
 
-// ════════════════════════════════════════
-// GET /admin/users  — Get all users
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// GET /admin/stats  — Dashboard overview stats
+// ════════════════════════════════════════════════════════════
+router.get("/stats", verifyAdmin, async (req, res) => {
+  try {
+    const [totalUsers, totalAuctions, auctions] = await Promise.all([
+      User.countDocuments(),
+      Auction.countDocuments(),
+      Auction.find({}, "price"),
+    ]);
+
+    const totalValue = auctions.reduce((sum, a) => sum + (a.price || 0), 0);
+    const avgPrice   = totalAuctions > 0 ? Math.round(totalValue / totalAuctions) : 0;
+    const activeListings = auctions.filter((a) => a.price > 0).length;
+
+    // Users registered in the last 7 days
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+    const newUsers = await User.countDocuments({ createdAt: { $gte: sevenDaysAgo } });
+
+    res.json({ totalUsers, totalAuctions, activeListings, avgPrice, newUsers });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch stats" });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
+// GET /admin/users  — Get all users (sorted newest first)
+// ════════════════════════════════════════════════════════════
 router.get("/users", verifyAdmin, async (req, res) => {
   try {
     const users = await User.find({}, "-password").sort({ createdAt: -1 });
@@ -77,9 +99,9 @@ router.get("/users", verifyAdmin, async (req, res) => {
   }
 });
 
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 // DELETE /admin/users/:id  — Delete a user
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 router.delete("/users/:id", verifyAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
@@ -93,9 +115,30 @@ router.delete("/users/:id", verifyAdmin, async (req, res) => {
   }
 });
 
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
+// PATCH /admin/users/:id/role  — Toggle user role
+// ════════════════════════════════════════════════════════════
+router.patch("/users/:id/role", verifyAdmin, async (req, res) => {
+  try {
+    const { role } = req.body;
+    if (!["user", "admin"].includes(role)) {
+      return res.status(400).json({ error: "Invalid role. Must be 'user' or 'admin'" });
+    }
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      { role },
+      { new: true, select: "-password" }
+    );
+    if (!user) return res.status(404).json({ error: "User not found" });
+    res.json({ user });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to update user role" });
+  }
+});
+
+// ════════════════════════════════════════════════════════════
 // GET /admin/auctions  — Get all auctions
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 router.get("/auctions", verifyAdmin, async (req, res) => {
   try {
     const auctions = await Auction.find().sort({ createdAt: -1 });
@@ -105,9 +148,9 @@ router.get("/auctions", verifyAdmin, async (req, res) => {
   }
 });
 
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 // POST /admin/auctions  — Add new auction
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 router.post("/auctions", verifyAdmin, async (req, res) => {
   try {
     const { name, description, quantity, price } = req.body;
@@ -122,9 +165,9 @@ router.post("/auctions", verifyAdmin, async (req, res) => {
   }
 });
 
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 // DELETE /admin/auctions/:id  — Remove auction
-// ════════════════════════════════════════
+// ════════════════════════════════════════════════════════════
 router.delete("/auctions/:id", verifyAdmin, async (req, res) => {
   try {
     const auction = await Auction.findByIdAndDelete(req.params.id);

@@ -52,7 +52,11 @@ const DiseaseDetection = () => {
       }
     } catch (error) {
       console.error("❌ Upload Error:", error);
-      setError("⚠ Failed to connect to the server. Ensure Flask is running.");
+      if (error.response && error.response.data && error.response.data.error) {
+        setError(error.response.data.error);
+      } else {
+        setError("⚠ Failed to connect to the server. Ensure Flask is running.");
+      }
     } finally {
       setLoading(false);
     }
